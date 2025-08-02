@@ -1,0 +1,40 @@
+### Obtener todos los productos
+GET http://localhost:3000/api/products
+Content-Type: application/json
+
+###
+
+### Crear nuevo producto
+POST http://localhost:3000/api/products
+Content-Type: application/json
+
+{
+  "name": "Monitor 27 pulgadas",
+  "description": "Pantalla Full HD con buena resolución",
+  "category": "Electrónica",
+  "price": 3200,
+  "stock": 5,
+  "imageUrl": "https://ejemplo.com/monitor.jpg"
+}
+
+###
+
+### Obtener producto por ID
+GET http://localhost:3000/api/products/
+Content-Type: application/json
+
+###
+
+### Actualizar producto por ID
+PUT http://localhost:3000/api/products/
+
+{
+  "name": "Monitor 27 pulgadas - actualizado",
+  "price": 2999
+}
+
+###
+
+### Eliminar producto por ID
+DELETE http://localhost:3000/api/products/
+Content-Type: application/json
