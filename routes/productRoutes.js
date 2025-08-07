@@ -3,6 +3,8 @@ const { body } = require('express-validator');
 const router = express.Router();
 const productController = require('../controllers/productController');
 
+const auth = require('../middleware/authMiddleware');
+
 // Validaciones 
 const validateProduct = [
   body('name').notEmpty().withMessage('El nombre es obligatorio'),
@@ -16,5 +18,10 @@ router.get('/:id', productController.getProductById);
 router.post('/', validateProduct, productController.createProduct);
 router.put('/:id', validateProduct, productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);
+
+
+router.post('/', auth, productController.createProduct);
+router.put('/:id', auth, productController.updateProduct);
+router.delete('/:id', auth, productController.deleteProduct);
 
 module.exports = router;
