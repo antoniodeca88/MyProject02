@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'Usuario o email ya registrados' });
     }
 
-    // Guardar usuario (hash se hace en el modelo con pre('save'))
+    // Guardar usuario
     const newUser = new User({ username, email, password });
     await newUser.save();
 

@@ -1,0 +1,252 @@
+openapi: 3.0.0
+info:
+  title: API de Productos y Usuarios
+  version: 1.0.0
+  description: API para gestionar productos y usuarios con CRUD y autenticación
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  # Productos
+  /api/products:
+    get:
+      summary: Obtener todos los productos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Crear un nuevo producto (requiere token)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '401':
+          description: No autorizado
+
+  /api/products/{id}:
+    get:
+      summary: Obtener un producto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+    put:
+      summary: Actualizar un producto por ID (requiere token)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del producto a actualizar
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Error en datos de entrada
+        '401':
+          description: No autorizado
+        '404':
+          description: Producto no encontrado
+    delete:
+      summary: Eliminar un producto por ID (requiere token)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del producto a eliminar
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto eliminado
+        '401':
+          description: No autorizado
+        '404':
+          description: Producto no encontrado
+
+  # Usuarios
+  /api/auth/register:
+    post:
+      summary: Registrar nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Usuario registrado correctamente
+        '400':
+          description: Error en datos de entrada o usuario ya registrado
+
+  /api/auth/login:
+    post:
+      summary: Login de usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Login exitoso y token JWT generado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Credenciales inválidas
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID del producto
+          example: 64de9fa1f0e8c32a4b123456
+        name:
+          type: string
+          example: "Camiseta"
+        description:
+          type: string
+          example: "Camiseta de algodón"
+        category:
+          type: string
+          example: "Ropa"
+        price:
+          type: number
+          example: 299.99
+        stock:
+          type: integer
+          example: 10
+        available:
+          type: boolean
+          example: true
+        imageUrl:
+          type: string
+          example: "http://example.com/image.jpg"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-08-11T15:21:22Z"
+
+    ProductInput:
+      type: object
+      required:
+        - name
+        - category
+        - price
+      properties:
+        name:
+          type: string
+          example: "Camiseta"
+        description:
+          type: string
+          example: "Camiseta de algodón"
+        category:
+          type: string
+          example: "Ropa"
+        price:
+          type: number
+          example: 299.99
+        stock:
+          type: integer
+          example: 10
+        available:
+          type: boolean
+          example: true
+        imageUrl:
+          type: string
+          example: "http://example.com/image.jpg"
+
+    UserInput:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          example: "usuario123"
+        email:
+          type: string
+          format: email
+          example: "usuario@example.com"
+        password:
+          type: string
+          format: password
+          example: "password123"
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "usuario@example.com"
+        password:
+          type: string
+          format: password
+          example: "password123"

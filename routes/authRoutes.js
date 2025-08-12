@@ -1,34 +1,77 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
+const { register, login } = require('../controllers/authController');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-    const user = new User({ username, email, password });
-    await user.save();
-    res.status(201).json({ message: 'Usuario registrado con éxito' });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: API para usuarios
+ */
 
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: 'Usuario no encontrado' });
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Registro de usuario
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: usuario1
+ *               email:
+ *                 type: string
+ *                 example: usuario1@mail.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       201:
+ *         description: Usuario registrado correctamente
+ *       400:
+ *         description: Error en los datos
+ */
+router.post('/register', register);
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) return res.status(400).json({ error: 'Contraseña incorrecta' });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login de usuario
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: usuario1@mail.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Login exitoso, devuelve token JWT
+ *       400:
+ *         description: Credenciales inválidas
+ */
+router.post('/login', login);
 
 module.exports = router;
