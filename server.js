@@ -23,7 +23,7 @@ const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 
 app.use('/api/auth', authRoutes);
-app.use('/api/products', auth, productRoutes); // Protegido con JWT
+app.use('/api/products', productRoutes); 
 
 // Ruta de prueba
 app.get('/test', (req, res) => {
